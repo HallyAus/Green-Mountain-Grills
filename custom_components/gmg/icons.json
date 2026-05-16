@@ -1,0 +1,114 @@
+{
+  "entity": {
+    "climate": {
+      "grill": {
+        "default": "mdi:grill"
+      }
+    },
+    "sensor": {
+      "grill_temperature": {
+        "default": "mdi:thermometer"
+      },
+      "probe_1_temperature": {
+        "default": "mdi:thermometer-probe"
+      },
+      "probe_2_temperature": {
+        "default": "mdi:thermometer-probe"
+      },
+      "power_state": {
+        "default": "mdi:power",
+        "state": {
+          "off": "mdi:power-off",
+          "on": "mdi:power-on",
+          "fan": "mdi:fan",
+          "cold_smoke": "mdi:smoke"
+        }
+      },
+      "fire_state": {
+        "default": "mdi:fire",
+        "state": {
+          "off": "mdi:fire-off",
+          "startup": "mdi:fire-alert",
+          "running": "mdi:fire",
+          "cool_down": "mdi:snowflake-thermometer",
+          "fail": "mdi:fire-alert",
+          "cold_smoke": "mdi:smoke"
+        }
+      },
+      "warning": {
+        "default": "mdi:alert"
+      },
+      "hopper": {
+        "default": "mdi:storage-tank"
+      },
+      "firmware_version": {
+        "default": "mdi:chip"
+      },
+      "model": {
+        "default": "mdi:tag"
+      }
+    },
+    "binary_sensor": {
+      "low_pellet": {
+        "default": "mdi:alert-decagram"
+      },
+      "fan_overload": {
+        "default": "mdi:fan-alert"
+      },
+      "auger_overload": {
+        "default": "mdi:alert"
+      },
+      "ignitor_overload": {
+        "default": "mdi:alert"
+      },
+      "low_voltage": {
+        "default": "mdi:battery-alert"
+      },
+      "fan_disconnect": {
+        "default": "mdi:fan-off"
+      },
+      "auger_disconnect": {
+        "default": "mdi:alert-octagon"
+      },
+      "ignitor_disconnect": {
+        "default": "mdi:flash-off"
+      },
+      "flame_on": {
+        "default": "mdi:fire"
+      },
+      "cooking": {
+        "default": "mdi:pot-steam"
+      }
+    },
+    "number": {
+      "grill_setpoint": {
+        "default": "mdi:thermostat"
+      },
+      "probe_1_target": {
+        "default": "mdi:thermometer-probe"
+      },
+      "probe_2_target": {
+        "default": "mdi:thermometer-probe"
+      }
+    },
+    "button": {
+      "power_on": {
+        "default": "mdi:power"
+      },
+      "power_off": {
+        "default": "mdi:power-off"
+      },
+      "cold_smoke": {
+        "default": "mdi:smoke"
+      }
+    }
+  },
+  "services": {
+    "set_probe_target": {
+      "service": "mdi:thermometer-probe"
+    },
+    "refresh": {
+      "service": "mdi:refresh"
+    }
+  }
+}

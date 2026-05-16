@@ -1,0 +1,238 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Set up a Green Mountain Grill",
+        "description": "Add a grill by scanning your LAN or entering its address manually.",
+        "menu_options": {
+          "scan": "Scan my network",
+          "manual": "Enter address manually"
+        }
+      },
+      "scan": {
+        "title": "Discovered grills",
+        "description": "Pick the grill to add.",
+        "data": {
+          "selected_host": "Grill"
+        }
+      },
+      "manual": {
+        "title": "Connect to your grill",
+        "description": "Find the grill's IP in your router admin panel.",
+        "data": {
+          "host": "IP address or hostname",
+          "port": "Port"
+        },
+        "data_description": {
+          "host": "The local LAN address of the grill's WiFi module.",
+          "port": "UDP port for the grill protocol (default 8080)."
+        }
+      },
+      "discovery_confirm": {
+        "title": "Add {name}?",
+        "description": "Found a {model} at {host}. Do you want to add it?"
+      },
+      "reconfigure": {
+        "title": "Reconfigure grill",
+        "data": {
+          "host": "IP address or hostname",
+          "port": "Port"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Could not reach the grill at that address.",
+      "invalid_response": "The grill responded with unexpected data.",
+      "unknown": "Unexpected error. Check the logs."
+    },
+    "abort": {
+      "already_configured": "This grill is already configured.",
+      "no_devices_found": "No grills found on the local network. Make sure the grill is on, connected to WiFi (not Server Mode), and on the same VLAN.",
+      "server_mode_enabled": "The grill is in Server Mode and is not reachable locally. Disable Server Mode in the GMG app and try again.",
+      "wrong_device": "The address points to a different grill than this entry.",
+      "cannot_connect": "Could not reach the grill at that address.",
+      "reconfigure_successful": "Reconfigured successfully."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "data": {
+          "scan_interval": "Polling interval (seconds)"
+        },
+        "data_description": {
+          "scan_interval": "How often Home Assistant polls the grill for state. Lower values give snappier updates but more network chatter."
+        }
+      }
+    }
+  },
+  "entity": {
+    "climate": {
+      "grill": {
+        "name": null
+      }
+    },
+    "sensor": {
+      "grill_temperature": {
+        "name": "Grill temperature"
+      },
+      "probe_1_temperature": {
+        "name": "Probe 1 temperature"
+      },
+      "probe_2_temperature": {
+        "name": "Probe 2 temperature"
+      },
+      "power_state": {
+        "name": "Power state",
+        "state": {
+          "off": "Off",
+          "on": "On",
+          "fan": "Fan only",
+          "cold_smoke": "Cold smoke"
+        }
+      },
+      "fire_state": {
+        "name": "Fire state",
+        "state": {
+          "default": "Default",
+          "off": "Off",
+          "startup": "Starting up",
+          "running": "Running",
+          "cool_down": "Cooling down",
+          "fail": "Failed to ignite",
+          "cold_smoke": "Cold smoke"
+        }
+      },
+      "warning": {
+        "name": "Warning",
+        "state": {
+          "none": "None",
+          "fan_overload": "Fan overload",
+          "auger_overload": "Auger overload",
+          "ignitor_overload": "Ignitor overload",
+          "low_voltage": "Low voltage",
+          "fan_disconnect": "Fan disconnected",
+          "auger_disconnect": "Auger disconnected",
+          "ignitor_disconnect": "Ignitor disconnected",
+          "low_pellet": "Low pellets"
+        }
+      },
+      "hopper": {
+        "name": "Hopper level"
+      },
+      "firmware_version": {
+        "name": "Firmware version"
+      },
+      "model": {
+        "name": "Model"
+      }
+    },
+    "binary_sensor": {
+      "low_pellet": {
+        "name": "Low pellets"
+      },
+      "fan_overload": {
+        "name": "Fan overload"
+      },
+      "auger_overload": {
+        "name": "Auger overload"
+      },
+      "ignitor_overload": {
+        "name": "Ignitor overload"
+      },
+      "low_voltage": {
+        "name": "Low voltage"
+      },
+      "fan_disconnect": {
+        "name": "Fan disconnected"
+      },
+      "auger_disconnect": {
+        "name": "Auger disconnected"
+      },
+      "ignitor_disconnect": {
+        "name": "Ignitor disconnected"
+      },
+      "flame_on": {
+        "name": "Flame on"
+      },
+      "cooking": {
+        "name": "Cooking"
+      }
+    },
+    "number": {
+      "grill_setpoint": {
+        "name": "Grill setpoint"
+      },
+      "probe_1_target": {
+        "name": "Probe 1 target"
+      },
+      "probe_2_target": {
+        "name": "Probe 2 target"
+      }
+    },
+    "button": {
+      "power_on": {
+        "name": "Power on"
+      },
+      "power_off": {
+        "name": "Power off"
+      },
+      "cold_smoke": {
+        "name": "Cold smoke"
+      }
+    }
+  },
+  "exceptions": {
+    "set_temp_failed": {
+      "message": "Could not set grill temperature on {host}."
+    },
+    "set_probe_failed": {
+      "message": "Could not set probe target on {host}."
+    },
+    "power_command_failed": {
+      "message": "Power command to {host} failed."
+    },
+    "service_call_failed": {
+      "message": "Service call failed: {error}"
+    },
+    "invalid_temperature": {
+      "message": "Temperature {value} °F is out of range ({min}-{max})."
+    }
+  },
+  "issues": {
+    "server_mode_enabled": {
+      "title": "Grill {host} is in Server Mode",
+      "description": "The grill at {host} has Server Mode enabled in the GMG app. While Server Mode is on, the grill cannot be controlled locally. Open the GMG app and switch the grill back to local WiFi mode to restore Home Assistant control."
+    }
+  },
+  "services": {
+    "set_probe_target": {
+      "name": "Set probe target",
+      "description": "Sets a target temperature for a meat probe.",
+      "fields": {
+        "config_entry_id": {
+          "name": "Grill",
+          "description": "Which grill to control."
+        },
+        "probe": {
+          "name": "Probe",
+          "description": "Probe number (1 or 2)."
+        },
+        "temperature": {
+          "name": "Temperature",
+          "description": "Target temperature in degrees Fahrenheit (32-257)."
+        }
+      }
+    },
+    "refresh": {
+      "name": "Refresh state",
+      "description": "Forces a poll of the grill state.",
+      "fields": {
+        "config_entry_id": {
+          "name": "Grill",
+          "description": "Which grill to refresh."
+        }
+      }
+    }
+  }
+}

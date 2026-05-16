@@ -1,0 +1,8 @@
+{
+  "name": "Green Mountain Grills",
+  "homeassistant": "2026.1.0",
+  "hacs": "2.0.5",
+  "render_readme": true,
+  "zip_release": false,
+  "country": ["US", "AU", "CA", "GB", "DE", "NL", "NZ"]
+}

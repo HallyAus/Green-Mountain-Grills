@@ -1,0 +1,51 @@
+[project]
+name = "gmg-home-assistant"
+version = "1.0.0"
+description = "Home Assistant integration for Green Mountain Grills WiFi-enabled pellet smokers."
+requires-python = ">=3.13"
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "hallyaus" }]
+
+[tool.ruff]
+target-version = "py313"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+  "ANN401",  # Any in **kwargs is fine for HA hooks
+  "D203",    # incompatible with D211
+  "D212",    # incompatible with D213
+  "COM812",  # conflicts with formatter
+  "ISC001",  # conflicts with formatter
+  "TID252",  # relative imports are HA convention
+  "FBT001", "FBT002",  # booleans-as-args are fine for HA service handlers
+  "TRY003",  # long messages in exceptions are useful
+  "EM101", "EM102",  # ditto
+  "PLR0913",  # arg count
+  "RUF012",  # ClassVar requirement is annoying for HA Entity attrs
+  "PLR2004",  # magic value rule conflicts with HA constant patterns
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["S101", "D", "ANN", "PLR2004", "SLF001"]
+
+[tool.ruff.lint.flake8-pytest-style]
+fixture-parentheses = false
+
+[tool.ruff.lint.pydocstyle]
+convention = "pep257"
+
+[tool.mypy]
+python_version = "3.13"
+strict = true
+follow_imports = "silent"
+ignore_missing_imports = true
+warn_unreachable = true
+disallow_untyped_defs = true
+
+[tool.pytest.ini_options]
+addopts = "-ra -q --cov=custom_components.gmg --cov-report=term-missing"
+asyncio_mode = "auto"
+testpaths = ["tests"]
