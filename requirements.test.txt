@@ -6,4 +6,4 @@ pytest-homeassistant-custom-component>=0.13.313
 syrupy>=4.6
 ruff>=0.15.0
 mypy>=1.11
-voluptuous>=0.14
+voluptuous>=0.16.0
