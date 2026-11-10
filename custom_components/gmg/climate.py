@@ -1,7 +1,8 @@
 """Climate platform for the Green Mountain Grills integration."""
+
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from homeassistant.components.climate import (
     ClimateEntity,
@@ -10,9 +11,7 @@ from homeassistant.components.climate import (
     HVACMode,
 )
 from homeassistant.const import ATTR_TEMPERATURE, UnitOfTemperature
-from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
-from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
 from .api import FireState, PowerState
 from .const import (
@@ -21,14 +20,19 @@ from .const import (
     MAX_GRILL_TEMP_F,
     MIN_GRILL_TEMP_F,
 )
-from .coordinator import GMGConfigEntry, GMGCoordinator
 from .entity import GMGBaseEntity
+
+if TYPE_CHECKING:
+    from homeassistant.core import HomeAssistant
+    from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
+
+    from .coordinator import GMGConfigEntry, GMGCoordinator
 
 PARALLEL_UPDATES = 1
 
 
 async def async_setup_entry(
-    hass: HomeAssistant,
+    hass: HomeAssistant,  # noqa: ARG001
     entry: GMGConfigEntry,
     async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
@@ -102,21 +106,18 @@ class GMGGrillClimate(GMGBaseEntity, ClimateEntity):
             await self.coordinator.async_set_grill_temp(snapped)
         except HomeAssistantError:
             raise
-        except Exception as err:  # noqa: BLE001 - defensive boundary
+        except Exception as err:
             LOGGER.exception("Unexpected error setting grill temperature")
             raise HomeAssistantError(str(err)) from err
 
     async def async_set_hvac_mode(self, hvac_mode: HVACMode) -> None:
         """Switch between off, heat, and cold-smoke."""
-        try:
-            if hvac_mode is HVACMode.OFF:
-                await self.coordinator.async_power_off()
-            elif hvac_mode is HVACMode.HEAT:
-                await self.coordinator.async_power_on()
-            elif hvac_mode is HVACMode.FAN_ONLY:
-                await self.coordinator.async_cold_smoke()
-        except HomeAssistantError:
-            raise
+        if hvac_mode is HVACMode.OFF:
+            await self.coordinator.async_power_off()
+        elif hvac_mode is HVACMode.HEAT:
+            await self.coordinator.async_power_on()
+        elif hvac_mode is HVACMode.FAN_ONLY:
+            await self.coordinator.async_cold_smoke()
 
     async def async_turn_on(self) -> None:
         """Power the grill on."""

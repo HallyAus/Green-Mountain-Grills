@@ -1,8 +1,9 @@
 """Number platform for the Green Mountain Grills integration."""
+
 from __future__ import annotations
 
-from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 from homeassistant.components.number import (
     NumberDeviceClass,
@@ -11,9 +12,7 @@ from homeassistant.components.number import (
     NumberMode,
 )
 from homeassistant.const import UnitOfTemperature
-from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
-from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
 from .const import (
     GRILL_TEMP_STEP_F,
@@ -23,8 +22,15 @@ from .const import (
     MIN_GRILL_TEMP_F,
     MIN_PROBE_TARGET_F,
 )
-from .coordinator import GMGConfigEntry, GMGCoordinator
 from .entity import GMGBaseEntity
+
+if TYPE_CHECKING:
+    from collections.abc import Awaitable, Callable
+
+    from homeassistant.core import HomeAssistant
+    from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
+
+    from .coordinator import GMGConfigEntry, GMGCoordinator
 
 PARALLEL_UPDATES = 1
 
@@ -78,15 +84,13 @@ NUMBERS: tuple[GMGNumberDescription, ...] = (
 
 
 async def async_setup_entry(
-    hass: HomeAssistant,
+    hass: HomeAssistant,  # noqa: ARG001
     entry: GMGConfigEntry,
     async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
     """Set up GMG number entities from a config entry."""
     coordinator = entry.runtime_data
-    async_add_entities(
-        GMGNumber(coordinator, description) for description in NUMBERS
-    )
+    async_add_entities(GMGNumber(coordinator, description) for description in NUMBERS)
 
 
 class GMGNumber(GMGBaseEntity, NumberEntity):
@@ -115,6 +119,6 @@ class GMGNumber(GMGBaseEntity, NumberEntity):
             await self.entity_description.set_fn(self.coordinator, int(value))
         except HomeAssistantError:
             raise
-        except Exception as err:  # noqa: BLE001 - defensive boundary
+        except Exception as err:
             LOGGER.exception("Unexpected error setting %s", self.entity_description.key)
             raise HomeAssistantError(str(err)) from err

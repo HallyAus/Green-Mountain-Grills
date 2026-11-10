@@ -32,7 +32,7 @@ class _DiscoveryProtocol(asyncio.DatagramProtocol):
         self.transport: asyncio.DatagramTransport | None = None
 
     def connection_made(self, transport: asyncio.BaseTransport) -> None:
-        self.transport = cast(asyncio.DatagramTransport, transport)
+        self.transport = cast("asyncio.DatagramTransport", transport)
 
     def datagram_received(self, data: bytes, addr: tuple[str | object, int]) -> None:
         host = addr[0] if isinstance(addr[0], str) else str(addr[0])
@@ -44,7 +44,7 @@ class _DiscoveryProtocol(asyncio.DatagramProtocol):
 
 
 async def async_discover(
-    timeout: float = DEFAULT_DISCOVERY_TIMEOUT,
+    timeout: float = DEFAULT_DISCOVERY_TIMEOUT,  # noqa: ASYNC109
     *,
     broadcast: str = DEFAULT_BROADCAST,
     port: int = DEFAULT_PORT,
@@ -57,7 +57,7 @@ async def async_discover(
 
     transport, proto = await loop.create_datagram_endpoint(
         _DiscoveryProtocol,
-        local_addr=("0.0.0.0", 0),
+        local_addr=("0.0.0.0", 0),  # noqa: S104
         allow_broadcast=True,
     )
 

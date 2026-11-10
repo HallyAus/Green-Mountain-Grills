@@ -1,17 +1,23 @@
 """Button platform for the Green Mountain Grills integration."""
+
 from __future__ import annotations
 
-from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 from homeassistant.components.button import ButtonEntity, ButtonEntityDescription
-from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
-from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
 from .const import LOGGER
-from .coordinator import GMGConfigEntry, GMGCoordinator
 from .entity import GMGBaseEntity
+
+if TYPE_CHECKING:
+    from collections.abc import Awaitable, Callable
+
+    from homeassistant.core import HomeAssistant
+    from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
+
+    from .coordinator import GMGConfigEntry, GMGCoordinator
 
 PARALLEL_UPDATES = 1
 
@@ -43,15 +49,13 @@ BUTTONS: tuple[GMGButtonDescription, ...] = (
 
 
 async def async_setup_entry(
-    hass: HomeAssistant,
+    hass: HomeAssistant,  # noqa: ARG001
     entry: GMGConfigEntry,
     async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
     """Set up GMG buttons from a config entry."""
     coordinator = entry.runtime_data
-    async_add_entities(
-        GMGButton(coordinator, description) for description in BUTTONS
-    )
+    async_add_entities(GMGButton(coordinator, description) for description in BUTTONS)
 
 
 class GMGButton(GMGBaseEntity, ButtonEntity):
@@ -75,6 +79,6 @@ class GMGButton(GMGBaseEntity, ButtonEntity):
             await self.entity_description.press_fn(self.coordinator)
         except HomeAssistantError:
             raise
-        except Exception as err:  # noqa: BLE001 - defensive boundary
+        except Exception as err:
             LOGGER.exception("Unexpected error pressing %s", self.entity_description.key)
             raise HomeAssistantError(str(err)) from err

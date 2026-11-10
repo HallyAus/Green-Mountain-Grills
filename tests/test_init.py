@@ -1,4 +1,5 @@
 """Tests for the integration's __init__ setup / unload paths."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING

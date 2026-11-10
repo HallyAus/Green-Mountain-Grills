@@ -68,9 +68,7 @@ def parse_status_frame(data: bytes) -> GMGSnapshot:
             f"status frame too short: got {len(data)} bytes, need {STATUS_FRAME_LEN}"
         )
     if data[0:2] != STATUS_HEADER:
-        raise GMGProtocolError(
-            f"status frame header mismatch: {data[0:2]!r} != {STATUS_HEADER!r}"
-        )
+        raise GMGProtocolError(f"status frame header mismatch: {data[0:2]!r} != {STATUS_HEADER!r}")
 
     frame = data[:STATUS_FRAME_LEN]
 
@@ -102,9 +100,11 @@ def parse_status_frame(data: bytes) -> GMGSnapshot:
         fire_state = FireState.DEFAULT
 
     warn_value = warn_raw & 0xFFFF_FFFF
-    low_pellet = warn_value == WarnCode.LOW_PELLET or warn_value == LOW_PELLET_ALT_VALUE
+    low_pellet = warn_value in (WarnCode.LOW_PELLET, LOW_PELLET_ALT_VALUE)
     try:
-        warn_code = WarnCode(warn_value) if warn_value != LOW_PELLET_ALT_VALUE else WarnCode.LOW_PELLET
+        warn_code = (
+            WarnCode(warn_value) if warn_value != LOW_PELLET_ALT_VALUE else WarnCode.LOW_PELLET
+        )
     except ValueError:
         warn_code = WarnCode.NONE
 
@@ -127,9 +127,7 @@ def parse_status_frame(data: bytes) -> GMGSnapshot:
         auger_disconnect=warn_code == WarnCode.AUGER_DISCONNECT,
         ignitor_disconnect=warn_code == WarnCode.IGNITOR_DISCONNECT,
         flame_on=fire_state == FireState.RUNNING,
-        cold_smoke=(
-            power_state == PowerState.COLD_SMOKE or fire_state == FireState.COLD_SMOKE
-        ),
+        cold_smoke=(power_state == PowerState.COLD_SMOKE or fire_state == FireState.COLD_SMOKE),
         hopper_pct=hopper_pct,
         grill_type=grill_type,
         profile_time_remaining_s=profile_time_remaining_s,
@@ -148,8 +146,7 @@ def encode_set_grill_temp(fahrenheit: int) -> bytes:
     value = _ensure_int(fahrenheit, "fahrenheit")
     if not GRILL_TEMP_MIN <= value <= GRILL_TEMP_MAX:
         raise GMGInvalidValueError(
-            f"grill setpoint {value} out of range "
-            f"[{GRILL_TEMP_MIN}, {GRILL_TEMP_MAX}]"
+            f"grill setpoint {value} out of range [{GRILL_TEMP_MIN}, {GRILL_TEMP_MAX}]"
         )
     return f"UT{value:03d}!".encode("ascii")
 
@@ -162,8 +159,7 @@ def encode_set_probe_target(probe: int, fahrenheit: int) -> bytes:
     value = _ensure_int(fahrenheit, "fahrenheit")
     if not PROBE_TEMP_MIN <= value <= PROBE_TEMP_MAX:
         raise GMGInvalidValueError(
-            f"probe setpoint {value} out of range "
-            f"[{PROBE_TEMP_MIN}, {PROBE_TEMP_MAX}]"
+            f"probe setpoint {value} out of range [{PROBE_TEMP_MIN}, {PROBE_TEMP_MAX}]"
         )
     letter = "F" if probe_idx == 1 else "f"
     return f"U{letter}{value:03d}!".encode("ascii")
