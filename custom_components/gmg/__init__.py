@@ -5,14 +5,17 @@ from typing import TYPE_CHECKING
 
 from homeassistant.const import CONF_HOST, CONF_PORT
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers import config_validation as cv
 
 from .api import GMGClient
-from .const import DEFAULT_PORT, PLATFORMS
+from .const import DEFAULT_PORT, DOMAIN, PLATFORMS
 from .coordinator import GMGConfigEntry, GMGCoordinator
 from .services import async_setup_services, async_unload_services
 
 if TYPE_CHECKING:
     from homeassistant.helpers.typing import ConfigType
+
+CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
 
 
 async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:

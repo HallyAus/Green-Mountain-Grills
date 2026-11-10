@@ -67,11 +67,6 @@
     }
   },
   "entity": {
-    "climate": {
-      "grill": {
-        "name": null
-      }
-    },
     "sensor": {
       "grill_temperature": {
         "name": "Grill temperature"
