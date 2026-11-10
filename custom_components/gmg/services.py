@@ -4,10 +4,12 @@ Register these from custom_components.gmg.__init__.async_setup() by calling
 ``async_setup_services(hass)``. ``async_unload_services(hass)`` is provided for
 symmetry but is not normally required since HA tears services down on reload.
 """
+
 from __future__ import annotations
 
-import voluptuous as vol
+from typing import TYPE_CHECKING
 
+import voluptuous as vol
 from homeassistant.config_entries import ConfigEntryState
 from homeassistant.const import ATTR_TEMPERATURE
 from homeassistant.core import HomeAssistant, ServiceCall, SupportsResponse, callback
@@ -21,7 +23,9 @@ from .const import (
     MAX_PROBE_TARGET_F,
     MIN_PROBE_TARGET_F,
 )
-from .coordinator import GMGConfigEntry, GMGCoordinator
+
+if TYPE_CHECKING:
+    from .coordinator import GMGConfigEntry, GMGCoordinator
 
 ATTR_CONFIG_ENTRY_ID = "config_entry_id"
 ATTR_PROBE = "probe"
@@ -47,9 +51,7 @@ _REFRESH_SCHEMA = vol.Schema(
 )
 
 
-def _resolve_coordinator(
-    hass: HomeAssistant, entry_id: str
-) -> GMGCoordinator:
+def _resolve_coordinator(hass: HomeAssistant, entry_id: str) -> GMGCoordinator:
     """Resolve a loaded GMG coordinator by config entry id."""
     entry: GMGConfigEntry | None = hass.config_entries.async_get_entry(entry_id)
     if entry is None or entry.domain != DOMAIN:
@@ -87,7 +89,7 @@ def async_setup_services(hass: HomeAssistant) -> None:
             ) from err
         except HomeAssistantError:
             raise
-        except Exception as err:  # noqa: BLE001 - defensive service boundary
+        except Exception as err:
             LOGGER.exception("set_probe_target service failed")
             raise HomeAssistantError(
                 translation_domain=DOMAIN,

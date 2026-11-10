@@ -1,10 +1,10 @@
 """The Green Mountain Grills integration."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
 from homeassistant.const import CONF_HOST, CONF_PORT
-from homeassistant.core import HomeAssistant
 from homeassistant.helpers import config_validation as cv
 
 from .api import GMGClient
@@ -13,12 +13,13 @@ from .coordinator import GMGConfigEntry, GMGCoordinator
 from .services import async_setup_services, async_unload_services
 
 if TYPE_CHECKING:
+    from homeassistant.core import HomeAssistant
     from homeassistant.helpers.typing import ConfigType
 
 CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
 
 
-async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
+async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:  # noqa: ARG001
     """Register integration-wide services exactly once."""
     async_setup_services(hass)
     return True
@@ -48,6 +49,6 @@ async def async_unload_entry(hass: HomeAssistant, entry: GMGConfigEntry) -> bool
     return unloaded
 
 
-async def async_migrate_entry(hass: HomeAssistant, entry: GMGConfigEntry) -> bool:
+async def async_migrate_entry(hass: HomeAssistant, entry: GMGConfigEntry) -> bool:  # noqa: ARG001
     """Migrate an old config entry to the current schema."""
     return True

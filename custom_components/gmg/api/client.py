@@ -13,10 +13,10 @@ import logging
 from typing import Final, cast
 
 from .const import (
+    CMD_COLD_SMOKE,
     CMD_FIRMWARE,
     CMD_POWER_OFF,
     CMD_POWER_ON,
-    CMD_COLD_SMOKE,
     CMD_SERIAL,
     CMD_STATUS,
     DEFAULT_MAX_RETRIES,
@@ -51,9 +51,9 @@ class _DatagramReplyProtocol(asyncio.DatagramProtocol):
         self.transport: asyncio.DatagramTransport | None = None
 
     def connection_made(self, transport: asyncio.BaseTransport) -> None:
-        self.transport = cast(asyncio.DatagramTransport, transport)
+        self.transport = cast("asyncio.DatagramTransport", transport)
 
-    def datagram_received(self, data: bytes, addr: tuple[str | object, int]) -> None:
+    def datagram_received(self, data: bytes, _addr: tuple[str | object, int]) -> None:
         if not self.future.done():
             self.future.set_result(data)
 
@@ -65,9 +65,7 @@ class _DatagramReplyProtocol(asyncio.DatagramProtocol):
         if self.future.done():
             return
         if exc is None:
-            self.future.set_exception(
-                ConnectionError("datagram endpoint closed before reply")
-            )
+            self.future.set_exception(ConnectionError("datagram endpoint closed before reply"))
         else:
             self.future.set_exception(exc)
 
@@ -91,6 +89,7 @@ class GMGClient:
         request_timeout: float = DEFAULT_REQUEST_TIMEOUT,
         max_retries: int = DEFAULT_MAX_RETRIES,
     ) -> None:
+        """Initialise a client for one grill."""
         if max_retries < 1:
             raise ValueError("max_retries must be >= 1")
         if request_timeout <= 0:
@@ -108,9 +107,9 @@ class GMGClient:
 
     async def async_close(self) -> None:
         """No long-lived resources are held; provided for API symmetry."""
-        return None
+        return
 
-    async def _request(self, payload: bytes, *, expect_status: bool) -> bytes:
+    async def _request(self, payload: bytes, *, expect_status: bool) -> bytes:  # noqa: C901
         """Send ``payload`` with retry and return the raw reply bytes."""
         loop = asyncio.get_running_loop()
         last_exc: Exception | None = None
@@ -120,7 +119,7 @@ class GMGClient:
             try:
                 transport, proto = await loop.create_datagram_endpoint(
                     _DatagramReplyProtocol,
-                    local_addr=("0.0.0.0", 0),
+                    local_addr=("0.0.0.0", 0),  # noqa: S104
                     remote_addr=(self.host, self.port),
                 )
             except OSError as err:
@@ -149,10 +148,8 @@ class GMGClient:
                     continue
 
                 try:
-                    data = await asyncio.wait_for(
-                        proto.future, timeout=self._request_timeout
-                    )
-                except asyncio.TimeoutError as err:
+                    data = await asyncio.wait_for(proto.future, timeout=self._request_timeout)
+                except TimeoutError as err:
                     last_exc = err
                     _LOGGER.debug(
                         "timeout awaiting reply from %s:%s (attempt %d/%d) for %r",
@@ -175,9 +172,7 @@ class GMGClient:
                     continue
 
                 if expect_status and not is_status_frame(data):
-                    last_exc = GMGProtocolError(
-                        f"unexpected reply ({len(data)} bytes): {data!r}"
-                    )
+                    last_exc = GMGProtocolError(f"unexpected reply ({len(data)} bytes): {data!r}")
                     _LOGGER.debug(
                         "rejecting reply from %s:%s on attempt %d: %s",
                         self.host,
@@ -200,13 +195,12 @@ class GMGClient:
 
         if isinstance(last_exc, GMGProtocolError):
             raise last_exc
-        if isinstance(last_exc, asyncio.TimeoutError) or last_exc is None:
+        if isinstance(last_exc, TimeoutError) or last_exc is None:
             # Retries exhausted at the timeout boundary on a host we tried to
             # reach — bubble up the dedicated Server Mode signal so the
             # integration can offer the right repair flow.
             raise GMGServerModeError(
-                f"no reply from {self.host}:{self.port} after "
-                f"{self._max_retries} attempts"
+                f"no reply from {self.host}:{self.port} after {self._max_retries} attempts"
             ) from last_exc
         raise GMGConnectionError(
             f"socket error talking to {self.host}:{self.port}: {last_exc}"
@@ -285,10 +279,10 @@ class GMGClient:
 
 # Re-exported for symmetry; consumers should use the module-level names.
 __all__ = [
-    "GMGClient",
     "STATUS_FRAME_LEN",
+    "GMGClient",
     "GMGConnectionError",
-    "GMGTimeoutError",
-    "GMGServerModeError",
     "GMGProtocolError",
+    "GMGServerModeError",
+    "GMGTimeoutError",
 ]

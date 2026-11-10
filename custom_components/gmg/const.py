@@ -1,4 +1,5 @@
 """Constants for the GMG integration."""
+
 from __future__ import annotations
 
 import logging

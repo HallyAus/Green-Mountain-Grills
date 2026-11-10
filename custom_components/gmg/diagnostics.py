@@ -1,19 +1,22 @@
 """Diagnostics support for the GMG integration."""
+
 from __future__ import annotations
 
 from dataclasses import asdict
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from homeassistant.components.diagnostics import async_redact_data
-from homeassistant.core import HomeAssistant
 
-from .coordinator import GMGConfigEntry
+if TYPE_CHECKING:
+    from homeassistant.core import HomeAssistant
+
+    from .coordinator import GMGConfigEntry
 
 TO_REDACT = {"host", "serial", "mac"}
 
 
 async def async_get_config_entry_diagnostics(
-    hass: HomeAssistant,
+    hass: HomeAssistant,  # noqa: ARG001
     entry: GMGConfigEntry,
 ) -> dict[str, Any]:
     """Return diagnostics for a GMG config entry."""

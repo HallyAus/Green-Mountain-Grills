@@ -1,13 +1,24 @@
 """Shared pytest fixtures for the GMG test suite."""
+
 from __future__ import annotations
 
-from collections.abc import Generator
+from typing import TYPE_CHECKING
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
+from custom_components.gmg.api import (
+    FireState,
+    GMGGrillInfo,
+    GMGSnapshot,
+    PowerState,
+    WarnCode,
+)
 from custom_components.gmg.const import DOMAIN
+
+if TYPE_CHECKING:
+    from collections.abc import Generator
 
 
 @pytest.fixture(autouse=True)
@@ -32,14 +43,6 @@ def mock_config_entry() -> MockConfigEntry:
 @pytest.fixture
 def mock_grill_info():
     """Return a populated GMGGrillInfo for use in tests."""
-    from custom_components.gmg.api import (
-        FireState,
-        GMGGrillInfo,
-        GMGSnapshot,
-        PowerState,
-        WarnCode,
-    )
-
     snap = GMGSnapshot(
         grill_temp=225,
         grill_set_temp=225,
@@ -76,10 +79,11 @@ def mock_grill_info():
 
 
 @pytest.fixture
-def mock_client(mock_grill_info) -> Generator[MagicMock, None, None]:
+def mock_client(mock_grill_info) -> Generator[MagicMock]:
     """Patch GMGClient everywhere it is imported and yield the mock instance."""
-    with patch("custom_components.gmg.GMGClient", autospec=True) as cls, patch(
-        "custom_components.gmg.config_flow.GMGClient", new=cls
+    with (
+        patch("custom_components.gmg.GMGClient", autospec=True) as cls,
+        patch("custom_components.gmg.config_flow.GMGClient", new=cls),
     ):
         inst = cls.return_value
         inst.host = "192.0.2.10"

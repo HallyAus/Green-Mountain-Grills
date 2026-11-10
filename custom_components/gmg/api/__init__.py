@@ -15,18 +15,18 @@ from .exceptions import (
 from .models import FireState, GMGGrillInfo, GMGSnapshot, PowerState, WarnCode
 
 __all__ = [
-    "GMGClient",
-    "async_discover",
     "DiscoveredGrill",
-    "GMGError",
+    "FireState",
+    "GMGClient",
     "GMGConnectionError",
-    "GMGTimeoutError",
+    "GMGError",
+    "GMGGrillInfo",
+    "GMGInvalidValueError",
     "GMGProtocolError",
     "GMGServerModeError",
-    "GMGInvalidValueError",
     "GMGSnapshot",
-    "GMGGrillInfo",
+    "GMGTimeoutError",
     "PowerState",
-    "FireState",
     "WarnCode",
+    "async_discover",
 ]

@@ -5,17 +5,20 @@ module's internal symbols diverge from the names assumed here, the file
 self-skips via ``pytest.importorskip`` so the rest of the suite continues to
 run.
 """
+
 from __future__ import annotations
 
 import struct
+from typing import TYPE_CHECKING
 
 import pytest
+
+if TYPE_CHECKING:
+    from custom_components.gmg.api import GMGSnapshot
 
 # Self-skip cleanly if the protocol module hasn't been written yet, or if its
 # internals diverge from the names used below.
 protocol = pytest.importorskip("custom_components.gmg.api.protocol")
-
-from custom_components.gmg.api import GMGSnapshot  # noqa: E402
 
 try:
     from custom_components.gmg.api.protocol import (
@@ -26,7 +29,9 @@ try:
         parse_status_frame,
     )
 except ImportError as exc:  # pragma: no cover - guard for divergent names
-    pytest.skip(f"protocol internals not exposed under expected names: {exc}", allow_module_level=True)
+    pytest.skip(
+        f"protocol internals not exposed under expected names: {exc}", allow_module_level=True
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -65,24 +70,24 @@ def _make_frame(
 ) -> bytes:
     """Construct a 36-byte status frame with the given field values."""
     frame = bytearray()
-    frame += header                       # 0..1
-    frame += _u16(grill_temp)             # 2..3
-    frame += _u16(probe_1)                # 4..5
-    frame += _u16(grill_set)              # 6..7
-    frame += bytes([api_version])         # 8
-    frame += build                        # 9..11
-    frame += _u16(probe_2)                # 12..13
-    frame += _u16(probe_2_set)            # 14..15
-    frame += _u32(profile_remaining)      # 16..19
-    frame += _u32(warn_code)              # 20..23
-    frame += _u16(probe_1_set)            # 24..25
-    frame += bytes([power_state])         # 26
-    frame += bytes([grill_mode])          # 27
-    frame += bytes([fire_state])          # 28
-    frame += bytes([hopper_pct])          # 29
-    frame += bytes([profile_end])         # 30
-    frame += bytes([grill_type])          # 31
-    frame += reserved                     # 32..35
+    frame += header  # 0..1
+    frame += _u16(grill_temp)  # 2..3
+    frame += _u16(probe_1)  # 4..5
+    frame += _u16(grill_set)  # 6..7
+    frame += bytes([api_version])  # 8
+    frame += build  # 9..11
+    frame += _u16(probe_2)  # 12..13
+    frame += _u16(probe_2_set)  # 14..15
+    frame += _u32(profile_remaining)  # 16..19
+    frame += _u32(warn_code)  # 20..23
+    frame += _u16(probe_1_set)  # 24..25
+    frame += bytes([power_state])  # 26
+    frame += bytes([grill_mode])  # 27
+    frame += bytes([fire_state])  # 28
+    frame += bytes([hopper_pct])  # 29
+    frame += bytes([profile_end])  # 30
+    frame += bytes([grill_type])  # 31
+    frame += reserved  # 32..35
     assert len(frame) == 36
     return bytes(frame)
 

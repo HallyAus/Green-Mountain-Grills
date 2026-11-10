@@ -26,6 +26,7 @@ ignore = [
   "PLR0913",  # arg count
   "RUF012",  # ClassVar requirement is annoying for HA Entity attrs
   "PLR2004",  # magic value rule conflicts with HA constant patterns
+  "CPY001",  # repo-root MIT licence; no per-file copyright headers
 ]
 
 [tool.ruff.lint.per-file-ignores]

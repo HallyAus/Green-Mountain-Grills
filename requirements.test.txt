@@ -1,9 +1,18 @@
-homeassistant>=2026.1.0
+# Pinned together for the Python 3.13 CI job. Release 0.13.316 of
+# pytest-homeassistant-custom-component requires Home Assistant 2026.2.3.
+# 0.13.317 and later require Python 3.14, which this workflow does not run.
+homeassistant==2026.2.3
 pytest>=8.0
 pytest-asyncio>=0.23
 pytest-cov>=5.0
-pytest-homeassistant-custom-component>=0.13.313
+pytest-homeassistant-custom-component==0.13.316
 syrupy>=4.6
 ruff>=0.15.0
 mypy>=1.11
 voluptuous>=0.14
+
+# Imported by homeassistant.components.dhcp in 2026.2.3. The homeassistant
+# distribution does not declare these, so the DHCP component fails to import.
+aiodhcpwatcher==1.2.1
+aiodiscover==2.7.1
+cached-ipaddress==1.0.1

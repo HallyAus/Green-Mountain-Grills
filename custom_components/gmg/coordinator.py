@@ -1,11 +1,12 @@
 """DataUpdateCoordinator for the GMG integration."""
+
 from __future__ import annotations
 
 import asyncio
 from datetime import timedelta
+from typing import TYPE_CHECKING
 
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import (
     ConfigEntryNotReady,
     HomeAssistantError,
@@ -17,6 +18,7 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, Upda
 from .api import (
     GMGClient,
     GMGConnectionError,
+    GMGError,
     GMGGrillInfo,
     GMGInvalidValueError,
     GMGProtocolError,
@@ -24,8 +26,12 @@ from .api import (
     GMGSnapshot,
     GMGTimeoutError,
 )
-from .api import GMGError
 from .const import CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL, DOMAIN, LOGGER
+
+if TYPE_CHECKING:
+    from collections.abc import Awaitable, Callable
+
+    from homeassistant.core import HomeAssistant
 
 type GMGConfigEntry = ConfigEntry[GMGCoordinator]
 
@@ -134,7 +140,7 @@ class GMGCoordinator(DataUpdateCoordinator[GMGSnapshot]):
         """Engage cold smoke mode."""
         await self._call(self.client.async_cold_smoke)
 
-    async def _call(self, func, /, *args) -> None:
+    async def _call(self, func: Callable[..., Awaitable[None]], /, *args: object) -> None:
         """Invoke a client command and refresh, mapping errors to HA exceptions."""
         try:
             await func(*args)
